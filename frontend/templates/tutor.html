@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}AI Tutor · EduMind AI{% endblock %}
+{% block content %}
+<div class="tutor-wrap">
+  <header class="tutor-head card">
+    <div class="row between wrap">
+      <h1>🦉 AI Tutor</h1>
+      <button class="btn btn-ghost btn-sm" id="newChat" type="button">➕ New chat</button>
+    </div>
+    <div class="controls">
+      <label>Style
+        <select id="mode" class="input"><option value="simple">Simple</option><option value="detailed">Detailed</option><option value="example">With examples</option></select>
+      </label>
+      <label>Language
+        <select id="lang" class="input"><option value="en">English</option><option value="hi">हिन्दी</option></select>
+      </label>
+      <label class="switch-label" title="Outside info is always shown in a separate box">
+        <span class="switch"><input type="checkbox" id="outside"><i></i></span> Allow outside knowledge
+      </label>
+    </div>
+    <div class="muted small" id="docInfo"></div>
+  </header>
+  <div id="chat" class="chat" aria-live="polite"></div>
+  <form id="chatForm" class="chat-input card">
+    <textarea id="q" class="input" rows="1" maxlength="2000" placeholder="Ask a question about your notes..." required></textarea>
+    <button class="btn btn-primary" type="submit" id="sendBtn">Send 🚀</button>
+  </form>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/tutor.js') }}"></script>{% endblock %}

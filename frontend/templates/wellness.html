@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Wellness · EduMind AI{% endblock %}
+{% block content %}
+<h1>🌈 Wellness</h1>
+<p class="muted">Small habits help big learning. Saved on this device only.</p>
+<div class="grid grid-2 stagger">
+  <section class="card">
+    <h3>How are you feeling today?</h3>
+    <div class="moods" id="moods">
+      <button type="button" data-m="😄">😄</button><button type="button" data-m="🙂">🙂</button><button type="button" data-m="😐">😐</button><button type="button" data-m="😟">😟</button><button type="button" data-m="😴">😴</button>
+    </div>
+    <p id="moodMsg" class="muted"></p>
+    <div id="moodHist" class="mood-hist"></div>
+  </section>
+  <section class="card center">
+    <h3>🔥 Study streak</h3>
+    <div class="streak"><span id="streakNum">0</span><small>days</small></div>
+    <button class="btn btn-yellow" id="studiedBtn" type="button">I studied today ✔️</button>
+  </section>
+  <section class="card center">
+    <h3>⏱️ Pomodoro (25 min)</h3>
+    <div class="ring pomo"><svg viewBox="0 0 100 100"><circle class="ring-bg" cx="50" cy="50" r="45"/><circle id="pomoRing" class="ring-fg pomo-fg" cx="50" cy="50" r="45"/></svg><div class="ring-label"><b id="pomoTime">25:00</b></div></div>
+    <div class="row center-row">
+      <button class="btn btn-primary" id="pStart" type="button">Start</button>
+      <button class="btn btn-ghost" id="pReset" type="button">Reset</button>
+    </div>
+  </section>
+  <section class="card">
+    <h3>💧 Break reminder</h3>
+    <label class="switch-label"><span class="switch"><input type="checkbox" id="remind"><i></i></span> Remind me every 30 minutes (while this page is open)</label>
+    <h3 class="mt">💡 Tip of the moment</h3>
+    <div class="tip" id="tip"></div>
+    <button class="btn btn-ghost btn-sm" id="nextTip" type="button">Another tip</button>
+  </section>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/wellness.js') }}"></script>{% endblock %}

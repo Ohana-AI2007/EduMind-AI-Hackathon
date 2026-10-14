@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}My Materials · EduMind AI{% endblock %}
+{% block content %}
+<h1>📚 My Materials</h1>
+<p class="muted">Upload notes, slides, textbooks or lecture videos. Tick the ones you want the Tutor and Quizzes to use.</p>
+<div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Upload files">
+  <div class="drop-emoji">📤</div>
+  <b>Drag &amp; drop files here, or click to choose</b>
+  <small>PDF, PPTX, TXT, MD, or video/audio (MP4, MOV, MKV, WEBM, AVI, M4V, MP3, WAV, M4A) · max 50 MB</small>
+  <input id="fileInput" type="file" multiple hidden accept=".pdf,.pptx,.txt,.md,.mp4,.mov,.mkv,.webm,.avi,.m4v,.mp3,.wav,.m4a">
+</div>
+<div id="selInfo" class="muted sel-info"></div>
+<div id="docs" data-mode="all" class="grid grid-2 stagger"></div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/library.js') }}"></script>{% endblock %}

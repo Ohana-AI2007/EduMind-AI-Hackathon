@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Quizzes · EduMind AI{% endblock %}
+{% block content %}
+<h1>🎯 Quiz Center</h1>
+<div class="tabs" id="tabs">
+  <button class="tab active" data-pane="createPane" type="button">✏️ Create</button>
+  <button class="tab" data-pane="historyPane" type="button">🕘 History</button>
+</div>
+<div id="warnBanner"></div>
+
+<section id="createPane">
+  <div class="card diag pop">
+    <div class="row wrap between">
+      <div><h3>🌱 New here? Start with a diagnostic quiz</h3><p class="muted">8 quick questions so Edu learns what you already know.</p></div>
+      <button class="btn btn-pink btn-lg" id="diagBtn" type="button">Diagnostic quiz</button>
+    </div>
+  </div>
+  <form id="genForm" class="card stack">
+    <h3>Make your own quiz</h3>
+    <div class="grid grid-2">
+      <label class="label">Type<select id="kind" class="input"><option value="practice">Practice</option><option value="mock_exam">Mock exam</option><option value="diagnostic">Diagnostic</option></select></label>
+      <label class="label">Based on<select id="mode" class="input"><option value="mixed">Mixed topics</option><option value="topic">Specific topic(s)</option><option value="document">Selected documents</option></select></label>
+      <label class="label">Questions (1-20)<input id="num" class="input" type="number" min="1" max="20" value="5"></label>
+      <label class="label">Difficulty<select id="difficulty" class="input"><option value="adaptive">Adaptive (best for me)</option><option value="beginner">Beginner</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option></select></label>
+    </div>
+    <label class="label" id="topicsRow" hidden>Topics (comma separated)<input id="topics" class="input" placeholder="e.g. Photosynthesis, Calvin cycle"></label>
+    <div class="muted small" id="docNote"></div>
+    <div class="label">Question types
+      <div class="row wrap">
+        <label class="chip-check"><input type="checkbox" name="qtype" value="mcq" checked> 🔘 Multiple choice</label>
+        <label class="chip-check"><input type="checkbox" name="qtype" value="short_answer"> ✍️ Short answer</label>
+        <label class="chip-check"><input type="checkbox" name="qtype" value="numerical"> 🔢 Numerical</label>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-lg" type="submit">Create quiz 🎲</button>
+  </form>
+</section>
+
+<section id="historyPane" hidden><div id="historyList" class="stack"></div></section>
+<section id="playPane" hidden></section>
+<div id="loading" class="loading" hidden><div id="loadOwl"></div><h3>Edu is writing your questions…</h3><p class="muted">This can take up to a minute.</p></div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/quizzes.js') }}"></script>{% endblock %}

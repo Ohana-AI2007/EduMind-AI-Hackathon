@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Welcome · EduMind AI{% endblock %}
+{% block content %}
+<section class="welcome card pop">
+  <div id="welcomeOwl" class="owl-big"></div>
+  <h1>Hi! I'm <span class="grad">Edu</span> 🦉</h1>
+  <p class="lead">Your friendly study buddy. Upload your notes, ask questions, take quizzes and watch your knowledge grow!</p>
+  <div class="sticker-row">
+    <span class="sticker" style="--c:#fff3b0;--r:-4deg">🔥 Daily streaks</span>
+    <span class="sticker" style="--c:#c9f7e3;--r:3deg">🎯 Smart quizzes</span>
+    <span class="sticker" style="--c:#ffd9e2;--r:-2deg">📚 Answers from YOUR notes</span>
+  </div>
+  <form id="nickForm" class="stack" autocomplete="off">
+    <label for="nick" class="label">What should I call you?</label>
+    <input id="nick" class="input input-lg" maxlength="64" placeholder="e.g. riya_2026" required>
+    <div id="nickErr" class="error-text" hidden></div>
+    <button class="btn btn-primary btn-lg" type="submit">Let's go! 🚀</button>
+    <button class="btn btn-mint" type="button" id="continueBtn" hidden></button>
+  </form>
+  <p class="note">Demo mode: no password. Your nickname just keeps your data separate.</p>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+  document.getElementById('welcomeOwl').innerHTML = mascot('happy', 150);
+  const form = document.getElementById('nickForm'), err = document.getElementById('nickErr');
+  const existing = getUser();
+  if (existing) {
+    const b = document.getElementById('continueBtn');
+    b.hidden = false; b.textContent = 'Continue as ' + existing + ' →';
+    b.onclick = () => location.href = '/dashboard';
+  }
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const v = document.getElementById('nick').value.trim();
+    if (!USER_RE.test(v)) {
+      err.hidden = false;
+      err.textContent = 'Use 1-64 letters, digits, _ or - (no spaces).';
+      return;
+    }
+    LS.set('edumind_user', v);
+    location.href = '/dashboard';
+  });
+</script>
+{% endblock %}

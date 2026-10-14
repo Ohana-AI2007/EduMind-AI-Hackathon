@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Planner · EduMind AI{% endblock %}
+{% block content %}
+<h1>🗓️ Study Planner</h1>
+<p class="muted">Plan your study sessions. Saved on this device only.</p>
+<form id="taskForm" class="card row wrap">
+  <input id="tTopic" class="input grow" maxlength="120" placeholder="What will you study?" required>
+  <input id="tDate" class="input" type="date" required>
+  <button class="btn btn-primary" type="submit">Add ➕</button>
+  <button class="btn btn-mint" type="button" id="addWeak">✨ Add my weak topics</button>
+</form>
+<div id="tasks" class="stack"></div>
+{% endblock %}
+{% block scripts %}
+<script>
+  const KEY = ukey('tasks');
+  let tasks = LS.get(KEY, []);
+  const today = () => new Date().toISOString().slice(0, 10);
+  document.getElementById('tDate').value = today();
+  const save = () => LS.set(KEY, tasks);
+  function render() {
+    const box = document.getElementById('tasks');
+    box.innerHTML = '';
+    if (!tasks.length) {
+      box.innerHTML = '<div class="empty card"><div class="empty-emoji">🗓️</div><h3>No plans yet</h3><p class="muted">Add your first study task above!</p></div>';
+      return;
+    }
+    [...tasks].sort((a, b) => a.date.localeCompare(b.date)).forEach(t => {
+      const overdue = !t.done && t.date < today();
+      box.append(h('div', {class: 'card task ' + (t.done ? 'done' : '')},
+        h('label', {class: 'row grow'},
+          h('input', {type: 'checkbox', checked: t.done ? 'checked' : null, onchange: e => { t.done = e.target.checked; save(); render(); if (t.done) toast('Task done! 🎉', 'ok'); }}),
+          h('span', {class: 'task-title'}, t.topic)),
+        h('span', {class: 'chip ' + (overdue ? 'weak' : '')}, (overdue ? '⏰ ' : '📅 ') + t.date),
+        h('button', {class: 'btn btn-ghost btn-sm', type: 'button', 'aria-label': 'Delete', onclick: () => { tasks = tasks.filter(x => x.id !== t.id); save(); render(); }}, '🗑️')));
+    });
+  }
+  document.getElementById('taskForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const topic = document.getElementById('tTopic').value.trim();
+    if (!topic) return;
+    tasks.push({id: Date.now() + Math.random(), topic, date: document.getElementById('tDate').value || today(), done: false});
+    document.getElementById('tTopic').value = '';
+    save(); render();
+  });
+  document.getElementById('addWeak').addEventListener('click', async () => {
+    try {
+      const rec = await api('/recommendations');
+      const picks = (rec.revision_priorities || []).filter(p => p.mastery < 0.7).slice(0, 5);
+      if (!picks.length) { toast('No weak topics yet. Take a quiz first!', 'warn'); return; }
+      picks.forEach(p => {
+        if (!tasks.some(t => t.topic === 'Revise: ' + p.topic && !t.done))
+          tasks.push({id: Date.now() + Math.random(), topic: 'Revise: ' + p.topic, date: today(), done: false});
+      });
+      save(); render(); toast('Added your weak topics ✨', 'ok');
+    } catch (e) { notify(e); }
+  });
+  render();
+</script>
+{% endblock %}

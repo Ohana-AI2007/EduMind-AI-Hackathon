@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Video Learning · EduMind AI{% endblock %}
+{% block content %}
+<h1>🎬 Video Learning</h1>
+<p class="muted">Upload a lecture video or audio. Edu transcribes it (needs FFmpeg + an API key on the backend) and answers with timestamps. If something is missing, the error is shown on the card.</p>
+<div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Upload lecture">
+  <div class="drop-emoji">🎬</div>
+  <b>Drop a lecture here, or click to choose</b>
+  <small>MP4, MOV, MKV, WEBM, AVI, M4V, MP3, WAV, M4A · max 50 MB</small>
+  <input id="fileInput" type="file" multiple hidden accept=".mp4,.mov,.mkv,.webm,.avi,.m4v,.mp3,.wav,.m4a">
+</div>
+<div id="selInfo"></div>
+<div id="docs" data-mode="video" class="grid grid-2 stagger"></div>
+
+<section id="vChatWrap" class="card" hidden>
+  <h3>💬 Ask about: <span id="vName"></span></h3>
+  <div id="vChat" class="chat small-chat"></div>
+  <form id="vForm" class="row">
+    <input id="vQ" class="input" maxlength="2000" placeholder="e.g. What did the lecturer say about enzymes?" required>
+    <button class="btn btn-primary" type="submit">Ask</button>
+  </form>
+</section>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/library.js') }}"></script>
+<script>
+  let vDoc = null;
+  const vsid = sessionId() + '-v';
+  window.onPickDoc = d => {
+    vDoc = d;
+    document.getElementById('vChatWrap').hidden = false;
+    document.getElementById('vName').textContent = d.filename;
+    document.getElementById('vChat').innerHTML = '';
+    document.getElementById('vChatWrap').scrollIntoView({behavior: 'smooth'});
+  };
+  document.getElementById('vForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    if (!vDoc) return;
+    const input = document.getElementById('vQ'), q = input.value.trim(), chat = document.getElementById('vChat');
+    if (!q) return;
+    input.value = '';
+    chat.append(h('div', {class: 'bubble user'}, q));
+    const typing = h('div', {class: 'bubble bot'}, h('span', {class: 'dots'}, h('i'), h('i'), h('i')));
+    chat.append(typing);
+    try {
+      const data = await api('/tutor/chat', {method: 'POST', body: {question: q, session_id: vsid, mode: 'simple', language: 'en', document_ids: [vDoc.id], allow_outside_knowledge: false}});
+      typing.replaceWith(h('div', {class: 'bubble bot'}, assistantCard(data, null)));
+    } catch (err) { typing.remove(); notify(err); }
+    chat.lastChild && chat.lastChild.scrollIntoView({behavior: 'smooth', block: 'end'});
+  });
+</script>
+{% endblock %}

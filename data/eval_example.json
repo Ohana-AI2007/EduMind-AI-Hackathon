@@ -1,0 +1,11 @@
+{
+  "name": "biology-demo",
+  "options": {"generate_answers": false, "top_k": 5},
+  "retrieval_cases": [
+    {"id": "r1", "question": "How do plants convert light energy?",
+     "expected_sources": [{"document_name": "bio.txt"}],
+     "reference_answer": "Plants convert light energy into chemical energy stored in glucose."}
+  ],
+  "unsupported_cases": [{"id": "u1", "question": "Who won the football world cup in 1998?"}],
+  "quiz_cases": [{"id": "q1", "document_names": ["bio.txt"], "num_questions": 3}]
+}

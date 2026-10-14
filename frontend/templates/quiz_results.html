@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Quiz Results · EduMind AI{% endblock %}
+{% block content %}
+<div id="result"><div class="card skeleton" style="height:240px"></div></div>
+{% endblock %}
+{% block scripts %}
+<script>
+(async () => {
+  const root = document.getElementById('result');
+  const aid = new URLSearchParams(location.search).get('attempt');
+  let r = null;
+  try {
+    r = aid ? await api('/quizzes/attempts/' + encodeURIComponent(aid))
+            : JSON.parse(sessionStorage.getItem('edumind_result') || 'null');
+  } catch (e) { notify(e); }
+  if (!r) {
+    root.innerHTML = '<div class="empty card"><div class="empty-emoji">🤔</div><h3>No result to show</h3><p class="muted">Take a quiz first!</p><a class="btn btn-primary" href="/quizzes">Go to quizzes</a></div>';
+    return;
+  }
+  const pct = r.percent || 0;
+  const mood = pct >= 70 ? 'celebrating' : pct >= 40 ? 'happy' : 'encouraging';
+  const title = pct >= 90 ? 'Superstar! 🌟' : pct >= 70 ? 'Great job! 🎉' : pct >= 40 ? 'Nice effort! 💪' : 'Every try makes you stronger! 🌱';
+  const color = pct >= 70 ? 'var(--mint-d)' : pct >= 40 ? 'var(--yellow-d)' : 'var(--pink)';
+  root.innerHTML = '';
+  const top = h('section', {class: 'card hero pop'},
+    h('div', {html: null}), h('div', {class: 'hero-text'}));
+  top.firstChild.innerHTML = ring(pct, {size: 160, color, label: 'score'});
+  const info = top.lastChild;
+  info.append(h('h1', {}, title),
+    h('p', {class: 'lead'}, `You scored ${r.score} out of ${r.max_score} · answered ${r.answered} of ${r.total}`),
+    h('div', {class: 'actions'},
+      h('a', {class: 'btn btn-primary', href: '/quizzes'}, 'Another quiz 🎯'),
+      h('a', {class: 'btn btn-yellow', href: '/tutor'}, 'Ask the tutor 🦉'),
+      h('a', {class: 'btn btn-mint', href: '/progress'}, 'See progress 📈')));
+  const owl = h('div', {class: 'owl-side'}); owl.innerHTML = mascot(mood, 110);
+  top.append(owl);
+  root.append(top);
+  if (pct >= 70 && !aid) celebrate();
+
+  // mastery updates
+  if ((r.mastery_updates || []).length) {
+    const box = h('section', {class: 'card'}, h('h3', {}, '🧠 Your mastery changed'));
+    r.mastery_updates.forEach(u => {
+      const b = Math.round(u.before * 100), a = Math.round(u.after * 100), up = a >= b;
+      const bar = h('div', {class: 'bar'});
+      bar.innerHTML = `<i class="ghost" style="width:${b}%"></i><i style="width:${a}%"></i>`;
+      box.append(h('div', {class: 'mastery-row'},
+        h('div', {class: 'row between'}, h('b', {}, u.topic), h('span', {class: up ? 'up' : 'down'}, `${b}% → ${a}% ${up ? '⬆️' : '↘️'}`)), bar));
+    });
+    root.append(box);
+  }
+
+  // report
+  const rep = r.report || {};
+  const sec = h('section', {class: 'grid grid-2'});
+  const chipList = (arr, cls) => arr.length ? h('div', {class: 'chips'}, arr.map(t => h('span', {class: 'chip ' + cls}, `${t.topic} · ${Math.round(t.accuracy * 100)}%`))) : null;
+  sec.append(
+    h('div', {class: 'card'}, h('h3', {}, '🌟 Strengths'), chipList(rep.strengths || [], 'strong') || h('p', {class: 'muted'}, 'Keep practicing to build strengths!')),
+    h('div', {class: 'card'}, h('h3', {}, '🌱 Grow here'), chipList(rep.weak_topics || [], 'weak') || h('p', {class: 'muted'}, 'No weak topics. Amazing!')));
+  root.append(sec);
+  if ((rep.suggested_revision || []).length) {
+    root.append(h('section', {class: 'card'}, h('h3', {}, '📖 Suggested revision'),
+      rep.suggested_revision.map(s => h('div', {class: 'rev-item'}, h('b', {}, s.topic),
+        s.sources.length ? h('div', {class: 'muted small'}, 'Read: ' + s.sources.join(' · ')) : null))));
+  }
+  if ((rep.misconceptions || []).length) {
+    root.append(h('section', {class: 'card'}, h('h3', {}, '💡 Let\'s fix these'),
+      rep.misconceptions.map(m => h('div', {class: 'rev-item'}, h('b', {}, m.question),
+        h('div', {class: 'small'}, 'Correct answer: ', h('b', {}, m.correct_answer)),
+        h('div', {class: 'muted small'}, m.note)))));
+  }
+
+  // per question
+  root.append(h('h2', {}, 'Question by question'));
+  const list = h('div', {class: 'stack stagger'});
+  (r.feedback || []).forEach(f => {
+    const ok = f.is_correct, skipped = !f.answered;
+    const card = h('div', {class: 'card fb ' + (ok ? 'ok' : skipped ? 'skip' : 'no')},
+      h('div', {class: 'row between wrap'},
+        h('b', {}, `${f.position}. ${f.question}`),
+        h('span', {class: 'chip ' + (ok ? 'strong' : skipped ? '' : 'dev')}, ok ? '✅ Correct' : skipped ? '⏭️ Skipped' : '💪 Not yet')),
+      h('div', {class: 'small muted'}, f.topic),
+      h('div', {class: 'answers'},
+        h('div', {}, 'Your answer: ', h('b', {}, f.user_answer || '—')),
+        h('div', {}, 'Correct answer: ', h('b', {}, f.correct_answer))),
+      f.explanation ? h('p', {}, '💡 ' + f.explanation) : null,
+      f.feedback ? h('p', {class: 'muted'}, f.feedback) : null,
+      (f.citations || []).map(c => h('button', {class: 'source-btn', type: 'button', onclick: () => c.source_available && c.chunk_id ? openCitation(c.chunk_id) : toast('The source document was deleted.', 'warn')},
+        '📎 ' + c.label, c.excerpt ? h('em', {}, ' “' + c.excerpt + '”') : null)),
+      h('div', {class: 'tiny muted'}, 'Graded by: ' + f.grading_method));
+    list.append(card);
+  });
+  root.append(list);
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Settings · EduMind AI{% endblock %}
+{% block content %}
+<h1>⚙️ Settings</h1>
+<div class="grid grid-2">
+  <form id="profileForm" class="card stack">
+    <h3>🙋 My learner profile</h3>
+    <div id="profInfo" class="muted small"></div>
+    <label class="label">Level<select id="level" class="input"><option value="">Not set</option><option value="beginner">Beginner</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option></select></label>
+    <label class="label">My goal<input id="goal" class="input" maxlength="300" placeholder="e.g. Ace my biology exam"></label>
+    <label class="label">Preferred language<select id="plang" class="input"><option value="en">English</option><option value="hi">हिन्दी</option></select></label>
+    <button class="btn btn-primary" type="submit">Save 💾</button>
+  </form>
+  <section class="card stack">
+    <h3>🩺 Server status</h3>
+    <div id="health" class="chips"><span class="skeleton chip">checking…</span></div>
+    <hr>
+    <div class="row wrap">
+      <button class="btn btn-ghost" id="switchBtn" type="button">🔄 Switch user</button>
+      <button class="btn btn-pink" id="clearBtn" type="button">🧹 Clear local data</button>
+    </div>
+    <p class="muted small">"Clear local data" removes planner, wellness and chat settings from this browser. Your server data stays.</p>
+  </section>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+  const chip = (ok, label) => h('span', {class: 'chip ' + (ok ? 'strong' : 'weak')}, (ok ? '✅ ' : '❌ ') + label);
+  (async () => {
+    try {
+      const hl = await api('/health'), box = document.getElementById('health');
+      box.innerHTML = '';
+      box.append(chip(hl.status === 'ok', 'Server ' + hl.status), chip(hl.ai_configured, 'AI key'), chip(hl.database === 'ok', 'Database'),
+        chip(hl.vector_store === 'ok', 'Vector store'));
+      Object.entries(hl.features || {}).forEach(([k, v]) => box.append(chip(v, k)));
+    } catch (e) { notify(e); document.getElementById('health').textContent = 'Unreachable'; }
+    try {
+      const p = await api('/learner/profile');
+      document.getElementById('level').value = p.level === 'unknown' ? '' : p.level;
+      document.getElementById('goal').value = p.goal || '';
+      document.getElementById('plang').value = p.preferred_language || 'en';
+      document.getElementById('profInfo').textContent = p.note || '';
+    } catch (e) { notify(e); }
+  })();
+  document.getElementById('profileForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const body = {goal: document.getElementById('goal').value, preferred_language: document.getElementById('plang').value};
+    const lv = document.getElementById('level').value;
+    if (lv) body.level = lv;
+    try { await api('/learner/profile', {method: 'PUT', body}); toast('Profile saved ✅', 'ok'); } catch (err) { notify(err); }
+  });
+  document.getElementById('switchBtn').onclick = () => { localStorage.removeItem('edumind_user'); location.href = '/'; };
+  document.getElementById('clearBtn').onclick = () => {
+    if (!confirm('Clear planner, wellness and chat settings on this device?')) return;
+    Object.keys(localStorage).filter(k => k.startsWith('edumind_') && k !== 'edumind_user').forEach(k => localStorage.removeItem(k));
+    sessionStorage.clear();
+    toast('Local data cleared 🧹', 'ok');
+  };
+</script>
+{% endblock %}

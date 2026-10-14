@@ -1,0 +1,26 @@
+@media (max-width: 960px){
+  .sidebar{display:none}
+  .main{margin-left:0;padding:18px 14px 104px}
+  .bottombar{display:flex;position:fixed;left:8px;right:8px;bottom:8px;z-index:30;gap:2px;padding:6px;overflow-x:auto;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border-radius:24px;box-shadow:0 8px 30px rgba(80,60,160,.28);scrollbar-width:none}
+  .bottombar::-webkit-scrollbar{display:none}
+  .bottombar a{flex:1 0 62px;display:flex;flex-direction:column;align-items:center;gap:0;padding:6px 4px;border-radius:16px;text-decoration:none;color:var(--muted);font-weight:800}
+  .bottombar a span{font-size:1.4rem}.bottombar a small{font-size:.68rem}
+  .bottombar a.active{background:var(--purple);color:#fff}
+  .main-public{padding:14px}
+}
+@media (max-width: 640px){
+  h1{font-size:1.6rem}
+  .hero{flex-direction:column;text-align:center}
+  .hero .actions{justify-content:center}
+  .owl-side{margin:0}
+  .bubble{max-width:96%}
+  .grid-2{grid-template-columns:1fr}
+  .controls{gap:10px}
+  .q-text{font-size:1.2rem}
+  .q-nav{flex-direction:column-reverse;align-items:stretch}
+  .q-nav .row{justify-content:space-between}
+  #toasts{left:12px;right:12px;top:10px;max-width:none}
+  .moods button{width:48px;height:48px}
+  .tutor-wrap{min-height:calc(100vh - 140px)}
+  .chat-input{bottom:84px}
+}

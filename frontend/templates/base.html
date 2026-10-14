@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}EduMind AI{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
+</head>
+<body data-public="{{ '1' if public else '0' }}">
+  <div class="blobs" aria-hidden="true"><i class="blob b1"></i><i class="blob b2"></i><i class="blob b3"></i><span class="float-emoji e1">⭐</span><span class="float-emoji e2">📚</span><span class="float-emoji e3">🚀</span></div>
+
+  {% if not public %}
+  {% set items = [('/dashboard','🏠','Home'),('/library','📚','Library'),('/tutor','🦉','Tutor'),('/quizzes','🎯','Quizzes'),('/progress','📈','Progress'),('/planner','🗓️','Planner'),('/video-learning','🎬','Videos'),('/wellness','🌈','Wellness'),('/settings','⚙️','Settings')] %}
+  <aside class="sidebar">
+    <a class="brand" href="/dashboard"><span class="brand-logo">🦉</span><span>EduMind <b>AI</b></span></a>
+    <nav>
+      {% for href, icon, label in items %}
+      <a href="{{ href }}" class="nav-link {{ 'active' if request.path == href or (href == '/quizzes' and request.path == '/quiz-results') else '' }}"><span>{{ icon }}</span>{{ label }}</a>
+      {% endfor %}
+    </nav>
+    <div class="user-box">
+      <div>Hi, <b id="navUser">friend</b> 👋</div>
+      <button class="btn btn-ghost btn-sm" id="switchUser" type="button">Switch user</button>
+    </div>
+  </aside>
+  <nav class="bottombar" aria-label="Main">
+    {% for href, icon, label in items %}
+    <a href="{{ href }}" class="{{ 'active' if request.path == href or (href == '/quizzes' and request.path == '/quiz-results') else '' }}"><span>{{ icon }}</span><small>{{ label }}</small></a>
+    {% endfor %}
+  </nav>
+  {% endif %}
+
+  <main class="main {{ 'main-public' if public else '' }}">
+    <div id="banner"></div>
+    {% block content %}{% endblock %}
+  </main>
+
+  <div id="toasts" aria-live="polite"></div>
+  <div id="drawerBack"></div>
+  <aside id="drawer" aria-hidden="true">
+    <header><h3 id="drawerTitle">Source</h3><button class="btn btn-ghost btn-sm" id="drawerClose" type="button" aria-label="Close">✕</button></header>
+    <div id="drawerBody"></div>
+  </aside>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

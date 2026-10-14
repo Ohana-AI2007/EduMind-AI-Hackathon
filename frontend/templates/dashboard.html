@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Home · EduMind AI{% endblock %}
+{% block content %}
+<section class="hero card pop">
+  <div id="heroOwl"></div>
+  <div class="hero-text">
+    <h1 id="greeting">Hello! 👋</h1>
+    <p class="lead" id="heroSub">Ready to learn something awesome today?</p>
+    <div class="actions">
+      <a class="btn btn-yellow" href="/library">📤 Upload notes</a>
+      <a class="btn btn-primary" href="/tutor">🦉 Ask the tutor</a>
+      <a class="btn btn-mint" href="/quizzes">🎯 Take a quiz</a>
+    </div>
+  </div>
+</section>
+
+<section class="card ask-box">
+  <h3>✨ Ask anything</h3>
+  <p class="muted">Try: "Explain photosynthesis", "Give me 5 MCQs on osmosis", "What should I study next?"</p>
+  <form id="askForm" class="row">
+    <input id="askInput" class="input" maxlength="2000" placeholder="Type here..." required>
+    <button class="btn btn-primary" type="submit">Go</button>
+  </form>
+  <div id="askOut" class="ask-out"></div>
+</section>
+
+<div id="dash" class="grid grid-3 stagger">
+  <div class="card skeleton" style="height:200px"></div>
+  <div class="card skeleton" style="height:200px"></div>
+  <div class="card skeleton" style="height:200px"></div>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>{% endblock %}

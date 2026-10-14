@@ -1,0 +1,118 @@
+.env
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+data/uploads/*
+data/chroma/
+data/*.db
+*.sqlite3
+!data/eval_example.json
+.env.*
+!.env.example
+
+# ==============================
+# Python
+# ==============================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# ==============================
+# Virtual Environments
+# ==============================
+.venv/
+venv/
+env/
+ENV/
+
+# ==============================
+# Environment Variables / Secrets
+# ==============================
+.env
+.env.*
+!.env.example
+
+# ==============================
+# Testing and Coverage
+# ==============================
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# ==============================
+# Type Checking / Linting
+# ==============================
+.mypy_cache/
+.pyright/
+.ruff_cache/
+
+# ==============================
+# Logs
+# ==============================
+*.log
+logs/
+
+# ==============================
+# Databases
+# ==============================
+*.db
+*.sqlite
+*.sqlite3
+
+# ==============================
+# AI / Vector Database Data
+# ==============================
+chroma/
+chroma_db/
+vector_store/
+embeddings_cache/
+
+# ==============================
+# Uploaded / Generated Files
+# ==============================
+uploads/
+temp/
+tmp/
+*.tmp
+
+# ==============================
+# Model and Large Data Files
+# ==============================
+*.pt
+*.pth
+*.onnx
+*.h5
+*.pkl
+*.joblib
+
+# ==============================
+# Jupyter Notebook
+# ==============================
+.ipynb_checkpoints/
+
+# ==============================
+# IDE / Editor
+# ==============================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ==============================
+# Operating System
+# ==============================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ==============================
+# Build Artifacts
+# ==============================
+build/
+dist/
+*.egg-info/
