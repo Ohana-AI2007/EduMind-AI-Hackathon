@@ -61,7 +61,7 @@ class Settings:
     max_upload_size_mb: int = field(default_factory=lambda: _int("MAX_UPLOAD_SIZE_MB", 50))
     max_request_body_kb: int = field(default_factory=lambda: _int("MAX_REQUEST_BODY_KB", 1024))
     cors_origins: list = field(default_factory=lambda: [
-        o.strip() for o in _env("CORS_ORIGINS", "http://localhost:3000,http://localhost:5173").split(",") if o.strip()])
+        o.strip() for o in _env("CORS_ORIGINS", "https://edumind-ai-hackathon.onrender.com").split(",") if o.strip()])
     chunk_size: int = field(default_factory=lambda: _int("CHUNK_SIZE", 1000))
     chunk_overlap: int = field(default_factory=lambda: _int("CHUNK_OVERLAP", 150))
     top_k: int = field(default_factory=lambda: _int("TOP_K", 5))
