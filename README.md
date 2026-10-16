@@ -104,3 +104,60 @@ Metrics with no data are `null`.
 - Model errors (e.g. temperature or vision unsupported): change `OPENAI_MODEL` / `OPENAI_VISION_MODEL` / leave `OPENAI_TEMPERATURE` empty.
 - Chroma errors after changing the embedding model: delete `data\chroma` and call reprocess on each document.
 - Scanned PDFs yield no text: install OCR dependencies (see requirements.txt).
+
+## Running EduMind AI Locally
+
+EduMind AI uses **Flask** for the frontend and **FastAPI with Uvicorn** for the backend. Run them in two separate terminals.
+
+### 1. Start the Backend (FastAPI)
+
+Open your first terminal in the project root directory:
+
+```powershell
+cd D:\EduMind-AI
+```
+
+Activate the virtual environment:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+Start the FastAPI server:
+
+```powershell
+python -m uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+Backend API documentation: http://127.0.0.1:8000/docs
+
+### 2. Start the Frontend (Flask)
+
+Open a **second terminal** and navigate to the frontend directory:
+
+```powershell
+cd D:\EduMind-AI\frontend
+```
+
+Activate the virtual environment:
+
+```powershell
+..\.venv\Scripts\Activate.ps1
+```
+
+Start the Flask application:
+
+```powershell
+python app.py
+```
+
+Open the frontend in your browser:
+
+http://127.0.0.1:5000
+
+### Important Notes
+
+- Keep both terminals running while using the application.
+- Start the backend before testing frontend features that require API access.
+- Ensure the required dependencies and environment variables are configured.
+- Never commit your `.env` file or API keys to GitHub.
